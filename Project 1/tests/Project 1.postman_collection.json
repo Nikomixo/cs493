@@ -1,0 +1,890 @@
+{
+	"info": {
+		"_postman_id": "0c2ae0f1-84c9-4f2c-b0a5-48f5cc722c9c",
+		"name": "Project 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "list businesses",
+			"item": [
+				{
+					"name": "businesses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/businesses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "businesses page 2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/businesses?page=2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "businesses invalid page (sends you to page 1)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/businesses?page=-1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "-1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "list individual business",
+			"item": [
+				{
+					"name": "get business id 1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/businesses/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get business id 2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/businesses/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get business id invalid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/businesses/200",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses",
+								"200"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "add business",
+			"item": [
+				{
+					"name": "adding valid business",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Yummy Town\",\r\n    \"street\": \"YumYum St.\",\r\n    \"city\": \"Portland\",\r\n    \"state\": \"OR\",\r\n    \"zip\": 97006,\r\n    \"phone\": \"555-231-2383\",\r\n    \"category\": \"Restaurant\",\r\n    \"subcategory\": \"Chinese Food\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/businesses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "adding valid business with optional arguments",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Super Sushi\",\r\n    \"street\": \"YumYum St.\",\r\n    \"city\": \"Portland\",\r\n    \"state\": \"OR\",\r\n    \"zip\": 97006,\r\n    \"phone\": \"555-382-1282\",\r\n    \"category\": \"Restaurant\",\r\n    \"subcategory\": \"Sushi Chain\",\r\n    \"email\": \"supersushi@sushinet.net\",\r\n    \"website\": \"sushinet.net\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/businesses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "adding businesses with missing data",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Super Sushi\",\r\n    \"phone\": \"555-382-1282\",\r\n    \"category\": \"Restaurant\",\r\n    \"subcategory\": \"Sushi Chain\",\r\n    \"email\": \"supersushi@sushinet.net\",\r\n    \"website\": \"sushinet.net\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/businesses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "update business",
+			"item": [
+				{
+					"name": "successful update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 0,\r\n    \"name\": \"Pedra's QQB\",\r\n    \"street\": \"YumYum St.\",\r\n    \"city\": \"Portland\",\r\n    \"state\": \"OR\",\r\n    \"zip\": 97006,\r\n    \"phone\": \"555-231-2381\",\r\n    \"category\": \"Restaurant\",\r\n    \"subcategory\": \"Texas BBQ\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/businesses/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "no business found",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 0,\r\n    \"name\": \"Pedra's QQB\",\r\n    \"street\": \"YumYum St.\",\r\n    \"city\": \"Portland\",\r\n    \"state\": \"OR\",\r\n    \"zip\": 97006,\r\n    \"phone\": \"555-231-2381\",\r\n    \"category\": \"Restaurant\",\r\n    \"subcategory\": \"Texas BBQ\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/businesses/200",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses",
+								"200"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "bad update body",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 0,\r\n    \"name\": \"Pedra's QQB\",\r\n    \"phone\": \"555-231-2381\",\r\n    \"category\": \"Restaurant\",\r\n    \"subcategory\": \"Texas BBQ\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/businesses/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses",
+								"0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "delete business",
+			"item": [
+				{
+					"name": "successful delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/businesses/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invalid business id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/businesses/200",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"businesses",
+								"200"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "reviews",
+			"item": [
+				{
+					"name": "add new review",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 4,\r\n    \"price\": \"$$$\",\r\n    \"review\": \"wow this place is yummy\",\r\n    \"business_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add new review bad business id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 4,\r\n    \"price\": \"$$$\",\r\n    \"review\": \"wow this place is yummy\",\r\n    \"business_id\": 200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add new review missing data",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 4,\r\n    \"business_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update review",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 4,\r\n    \"price\": \"$$$\",\r\n    \"review\": \"wow this place is yummy\",\r\n    \"business_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update review invalid review id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 4,\r\n    \"price\": \"$$$\",\r\n    \"review\": \"wow this place is yummy\",\r\n    \"business_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/200",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"200"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update review invalid body",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 4,\r\n    \"business_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/200",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"200"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete review",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 4,\r\n    \"business_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete review invalid review id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 4,\r\n    \"business_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/200",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"200"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "photos",
+			"item": [
+				{
+					"name": "uploading photo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"url\":  \"https://media-cdn.tripadvisor.com/media/photo-s/16/34/55/74/bar.jpg\",\r\n    \"caption\": \"Beautiful seating!\",\r\n    \"business_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "uploading photo bad body",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"caption\": \"Beautiful seating!\",\r\n    \"business_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "uploading photo invalid business id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"url\":  \"https://media-cdn.tripadvisor.com/media/photo-s/16/34/55/74/bar.jpg\",\r\n    \"caption\": \"Beautiful seating!\",\r\n    \"business_id\": 200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "editing caption",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"caption\": \"Wow that was awesome!!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photos/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photos",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "editing caption invalid photo id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"caption\": \"Wow that was awesome!!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photos/200",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photos",
+								"200"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "editing caption invalid body",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photos/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photos",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleting photo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photos/0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photos",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleting photo invalid id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photos/200",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photos",
+								"200"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user data",
+			"item": [
+				{
+					"name": "get businesses a user owns",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/0/businesses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"0",
+								"businesses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get reviews a user posted",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/0/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"0",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get photos a user posted",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/0/photos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"0",
+								"photos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "bad user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/hahahha/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"hahahha",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "localhost:3000",
+			"type": "default"
+		}
+	]
+}
