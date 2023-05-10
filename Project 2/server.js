@@ -34,10 +34,10 @@ app.use('*', function (req, res, next) {
 app.use('*', function (err, req, res, next) {
   console.error("== Error:", err)
   res.status(500).send({
-      err: "Server error.  Please try again later."
+    err: "Server error.  Please try again later."
   })
 })
 
-app.listen(port, function() {
+app.listen(port, function () {
   console.log("== Server is running on port", port);
 });
