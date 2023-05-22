@@ -22,8 +22,6 @@ function requireAuthenticationParams(req, res, next) {
         const payload = jwt.verify(token, secretKey);
         req.user = payload.sub;
         req.admin = payload.admin;
-        console.log(payload);
-        console.log(`${req.user} | ${req.params.userid}`);
 
         if (req.user != req.params.userid && !req.admin) {
             res.status(403).json({
@@ -33,7 +31,6 @@ function requireAuthenticationParams(req, res, next) {
             next();
         }
     } catch (err) {
-        console.log(err);
         res.status(401).json({
             error: "Invalid authentication token provided."
         });
@@ -54,7 +51,6 @@ function requireAuthentication(req, res, next) {
         const payload = jwt.verify(token, secretKey);
         next();
     } catch (err) {
-        console.log(err);
         res.status(401).json({
             error: "Invalid authentication token provided."
         });
@@ -65,7 +61,6 @@ function requireAuthentication(req, res, next) {
  * Non-middleware function that authenticates user permissions based on parameters
  */
 function authenticate(userid, req) {
-    console.log(userid);
     const authHeader = req.get('Authorization') || '';
     const authHeaderParts = authHeader.split(' ');
 
@@ -73,6 +68,7 @@ function authenticate(userid, req) {
 
     try {
         const payload = jwt.verify(token, secretKey);
+        console.log(payload);
 
         req.user = payload.sub;
         req.admin = payload.admin;

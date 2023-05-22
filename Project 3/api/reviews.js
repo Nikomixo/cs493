@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { validateAgainstSchema, extractValidFields } = require('../lib/validation');
+const { requireAuthentication, authenticate } = require('../lib/auth');
 
 const db = require('../lib/connections');
 
@@ -9,8 +10,8 @@ exports.router = router;
  * Schema describing required/optional fields of a review object.
  */
 const reviewSchema = {
-  userid: { required: true },
-  businessid: { required: true },
+  userId: { required: true },
+  businessId: { required: true },
   dollars: { required: true },
   stars: { required: true },
   review: { required: false }
@@ -66,27 +67,42 @@ async function deleteReviewById(reviewid) {
   return result.affectedRows > 0;
 }
 
+async function getUserFromReview(reviewid) {
+  const [result] = await db.query(
+    'SELECT userId FROM reviews WHERE id = ?',
+    [reviewid]
+  )
+
+  return result[0].userId;
+}
+
 /*
  * Route to create a new review.
  */
-router.post('/', async function (req, res, next) {
+router.post('/', requireAuthentication, async function (req, res, next) {
   try {
-    const review = extractValidFields(req.body, reviewSchema);
+    if (authenticate(req.body.userId, req)) {
+      const review = extractValidFields(req.body, reviewSchema);
 
-    const userReviewed = await userAlreadyReviewed(review.userid, review.businessid);
+      const userReviewed = await userAlreadyReviewed(review.userId, review.businessId);
 
-    if (userReviewed) {
-      res.status(403).json({
-        error: "User has already posted a review of this business."
-      });
+      if (userReviewed) {
+        res.status(403).json({
+          error: "User has already posted a review of this business."
+        });
+      } else {
+        id = await insertUserReview(req.body);
+        res.status(201).json({
+          id: id,
+          links: {
+            review: `/reviews/${id}`,
+            business: `/businesses/${review.businessId}`
+          }
+        });
+      }
     } else {
-      id = await insertUserReview(req.body);
-      res.status(201).json({
-        id: id,
-        links: {
-          review: `/reviews/${id}`,
-          business: `/businesses/${review.businessid}`
-        }
+      res.status(403).json({
+        error: "Unable to insert review into db."
       });
     }
   } catch (err) {
@@ -118,7 +134,7 @@ router.get('/:reviewID', async function (req, res, next) {
 /*
  * Route to update a review.
  */
-router.put('/:reviewID', async function (req, res, next) {
+router.put('/:reviewID', requireAuthentication, async function (req, res, next) {
   const reviewid = parseInt(req.params.reviewID);
 
   if (validateAgainstSchema(req.body, reviewSchema)) {
@@ -126,27 +142,34 @@ router.put('/:reviewID', async function (req, res, next) {
       * Make sure the updated review has the same businessid and userid as
       * the existing review.
       */
-    let updatedReview = extractValidFields(req.body, reviewSchema);
-    let existingReview = await getReviewById(reviewid);
-    if (updatedReview.reviewid === existingReview.reviewid && updatedReview.userid === existingReview.userid) {
-      try {
-        updateStatus = await updateReviewById(reviewid, req.body);
-        if (updateStatus) {
-          res.status(200).json({
-            links: {
-              review: `/reviews/${reviewid}`,
-              business: `/businesses/${updatedReview.businessid}`
-            }
-          });
-        } else {
-          next();
+    userId = await getUserFromReview(reviewid);
+    if (authenticate(userId, req)) {
+      let updatedReview = extractValidFields(req.body, reviewSchema);
+      let existingReview = await getReviewById(reviewid);
+      if (updatedReview.reviewId === existingReview.reviewId && updatedReview.userId === existingReview.userId) {
+        try {
+          updateStatus = await updateReviewById(reviewid, req.body);
+          if (updateStatus) {
+            res.status(200).json({
+              links: {
+                review: `/reviews/${reviewid}`,
+                business: `/businesses/${updatedReview.businessId}`
+              }
+            });
+          } else {
+            next();
+          }
+        } catch (err) {
+          error: "Unable to update review."
         }
-      } catch (err) {
-        error: "Unable to update review."
+      } else {
+        res.status(403).json({
+          error: "Updated review cannot modify reviewid or userid"
+        });
       }
     } else {
       res.status(403).json({
-        error: "Updated review cannot modify reviewid or userid"
+        error: "Unauthorized to perform this action."
       });
     }
   } else {
@@ -162,11 +185,18 @@ router.put('/:reviewID', async function (req, res, next) {
 router.delete('/:reviewID', async function (req, res, next) {
   const reviewid = parseInt(req.params.reviewID);
   try {
-    deleteStatus = await deleteReviewById(reviewid);
-    if (deleteStatus) {
-      res.status(204).end();
+    userId = await getUserFromReview(reviewid);
+    if (authenticate(userId, req)) {
+      deleteStatus = await deleteReviewById(reviewid);
+      if (deleteStatus) {
+        res.status(204).end();
+      } else {
+        next();
+      }
     } else {
-      next();
+      res.status(403).json({
+        error: "Unauthorized to perform this action."
+      });
     }
   } catch (err) {
     res.status(500).send({

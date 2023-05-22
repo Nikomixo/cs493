@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { validateAgainstSchema, extractValidFields } = require('../lib/validation');
-const { requireAuthentication, authenticate } = require('../lib/auth')
+const { requireAuthentication, authenticate } = require('../lib/auth');
 
 const { reviews } = require('./reviews');
 const { photos } = require('./photos');
@@ -115,6 +115,15 @@ async function deleteBusinessById(businessId) {
   return result.affectedRows > 0;
 }
 
+async function getOwnerFromBusiness(businessId) {
+  const [result] = await db.query(
+    'SELECT ownerId FROM businesses WHERE id = ?',
+    [businessId]
+  )
+
+  return result[0].ownerId;
+}
+
 /*
  * Route to return a list of businesses.
  */
@@ -186,19 +195,26 @@ router.get('/:businessid', async function (req, res, next) {
 /*
  * Route to replace data for a business.
  */
-router.put('/:businessid', async function (req, res, next) {
+router.put('/:businessid', requireAuthentication, async function (req, res, next) {
   const businessid = parseInt(req.params.businessid);
 
   try {
-    const updateStatus = await updateBusinessById(businessid, req.body);
-    if (updateStatus) {
-      res.status(200).json({
-        links: {
-          business: `/businesses/${businessid}`
-        }
-      })
+    ownerId = await getOwnerFromBusiness(businessid);
+    if (authenticate(ownerId, req)) {
+      const updateStatus = await updateBusinessById(businessid, req.body);
+      if (updateStatus) {
+        res.status(200).json({
+          links: {
+            business: `/businesses/${businessid}`
+          }
+        })
+      } else {
+        next();
+      }
     } else {
-      next();
+      res.status(403).json({
+        error: "Unauthorized to perform this action."
+      });
     }
   } catch (err) {
     res.status(500).json({
@@ -210,14 +226,21 @@ router.put('/:businessid', async function (req, res, next) {
 /*
  * Route to delete a business.
  */
-router.delete('/:businessid', async function (req, res, next) {
+router.delete('/:businessid', requireAuthentication, async function (req, res, next) {
   const businessid = parseInt(req.params.businessid);
   try {
-    deleteStatus = await deleteBusinessById(businessid);
-    if (deleteStatus) {
-      res.status(204).end();
+    ownerId = await getOwnerFromBusiness(businessid);
+    if (authenticate(ownerId, req)) {
+      deleteStatus = await deleteBusinessById(businessid);
+      if (deleteStatus) {
+        res.status(204).end();
+      } else {
+        next();
+      }
     } else {
-      next();
+      res.status(403).json({
+        error: "Unauthorized to perform this action."
+      });
     }
   } catch (err) {
     res.status(500).send({
