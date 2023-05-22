@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const { extractValidFields } = require('../lib/validation');
-const { generateAuthToken, requireAuthenticationParams } = require('../lib/auth')
+const { generateAuthToken, requireAuthenticationParams, is_admin } = require('../lib/auth')
 
 
 exports.router = router;
@@ -139,15 +139,23 @@ router.get('/:userid/photos', requireAuthenticationParams, async function (req, 
 
 router.post('/', async function (req, res, next) {
   try {
-    id = await insertNewUser(req.body);
-    res.status(201).json({
-      id: id,
-      links: {
-        review: `/${id}/reviews`,
-        photos: `/${id}/photos`,
-        businesses: `/${id}/businesses`
-      }
-    });
+    if (!req.body.admin || (req.body.admin && is_admin(req))) {
+      id = await insertNewUser(req.body);
+      res.status(201).json({
+        id: id,
+        links: {
+          review: `/${id}/reviews`,
+          photos: `/${id}/photos`,
+          businesses: `/${id}/businesses`
+        }
+      });
+    } else {
+      console.log(is_admin(req));
+      res.status(403).json({
+        error: "Unable to create new admin user."
+      });
+    }
+
   } catch (err) {
     res.status(400).json({
       error: "Unable to create new user."

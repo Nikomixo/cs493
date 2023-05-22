@@ -68,7 +68,6 @@ function authenticate(userid, req) {
 
     try {
         const payload = jwt.verify(token, secretKey);
-        console.log(payload);
 
         req.user = payload.sub;
         req.admin = payload.admin;
@@ -83,7 +82,25 @@ function authenticate(userid, req) {
     }
 }
 
+function is_admin(req) {
+    const authHeader = req.get('Authorization') || '';
+    const authHeaderParts = authHeader.split(' ');
+
+    const token = authHeaderParts[0] == 'Bearer' ? authHeaderParts[1] : null;
+
+    try {
+        const payload = jwt.verify(token, secretKey);
+
+        admin = payload.admin;
+
+        return admin;
+    } catch (err) {
+        return false;
+    }
+}
+
 exports.generateAuthToken = generateAuthToken;
 exports.requireAuthenticationParams = requireAuthenticationParams;
 exports.requireAuthentication = requireAuthentication;
 exports.authenticate = authenticate;
+exports.is_admin = is_admin;
