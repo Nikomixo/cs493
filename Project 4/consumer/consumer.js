@@ -13,6 +13,9 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Theoretically should update photo metadata to include the thumbnail id,
+// but GridFS doesn't really support changing existing metadata
+// without a hacky workaround that I couldn't get to work.
 async function updatePhotoMetadata(photo_id, thumbnail_id) {
     // const db = getDbReference();
     // await db.fs.files.update(
