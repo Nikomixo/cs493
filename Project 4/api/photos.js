@@ -4,6 +4,9 @@
 const crypto = require('crypto');
 
 const { Router } = require('express');
+const amqp = require('amqplib');
+const rabbitmqHost = process.env.RABBITMQ_HOST;
+const rabbitmqUrl = `amqp://${rabbitmqHost}`;
 
 const { validateAgainstSchema } = require('../lib/validation')
 const {
@@ -49,24 +52,30 @@ router.post(
     });
   },
   async (req, res) => {
-    console.log(req.file);
     if (validateAgainstSchema(req.body, PhotoSchema) && req.file) {
-      console.log("Validated!");
       try {
         const photo = {
           contentType: req.file.mimetype,
+          caption: req.body.caption,
           filename: req.file.filename,
           path: req.file.path,
           businessId: req.body.businessId
         };
 
         const id = await insertNewPhoto(photo)
+        const connection = await amqp.connect(rabbitmqUrl);
+
+        const channel = await connection.createChannel();
+        channel.sendToQueue('thumbnail', Buffer.from(id.toString()));
+
         await removeUploadedFile(req.file)
         res.status(201).send({
           id: id,
           links: {
-            photo: `/media/images/${photo.filename}`,
-            business: `/businesses/${req.body.businessId}`
+            photo: `/photos/${id}`,
+            business: `/businesses/${req.body.businessId}`,
+            media: `/media/images/${id}.${photo.filename.split('.')[1]}`,
+            thumbnail: `/media/thumbnail/${id}.jpg`
           }
         })
       } catch (err) {
@@ -92,9 +101,10 @@ router.get('/:id', async (req, res, next) => {
     if (photo) {
       const responseBody = {
         _id: photo._id,
-        url: `/media/images/${photo.filename}`,
         contentType: photo.metadata.contentType,
-        businessId: photo.metadata.businessId
+        businessId: photo.metadata.businessId,
+        media: `/media/images/${req.params.id}.${photo.filename.split('.')[1]}`,
+        thumbnail: `/media/thumbnail/${req.params.id}.jpg`
       };
 
       res.status(200).send(responseBody)

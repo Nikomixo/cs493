@@ -42,7 +42,9 @@ function insertNewPhoto(photo) {
 
     const metadata = {
       contentType: photo.contentType,
-      businessId: photo.businessId
+      caption: photo.caption,
+      businessId: photo.businessId,
+      thumbnail_id: null
     };
 
     const uploadStream = bucket.openUploadStream(
@@ -72,7 +74,6 @@ async function getPhotoById(id) {
   const db = getDbReference()
   const bucket = new GridFSBucket(db, { bucketName: 'photos' });
 
-
   // const collection = db.collection('photos')
   if (!ObjectId.isValid(id)) {
     return null
@@ -95,3 +96,11 @@ function getImageDownloadStreamByFilename(filename) {
   return bucket.openDownloadStreamByName(filename);
 }
 exports.getImageDownloadStreamByFilename = getImageDownloadStreamByFilename
+
+function getThumbnailDownloadStreamByFilename(filename) {
+  const db = getDbReference();
+  const bucket = new GridFSBucket(db, { bucketName: 'thumbnail' });
+
+  return bucket.openDownloadStreamByName(filename);
+}
+exports.getThumbnailDownloadStreamByFilename = getThumbnailDownloadStreamByFilename
